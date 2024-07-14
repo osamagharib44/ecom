@@ -385,8 +385,8 @@ COPY public.api_cartitem (id, quantity, cart_id, product_id) FROM stdin;
 --
 
 COPY public.api_product (id, title, description, price, stock, "createdAt", "updatedAt", "creatorId_id") FROM stdin;
-1	Admin product		10.00	10	2024-07-14 14:08:32.882372+00	2024-07-14 14:08:32.882387+00	2
-2	User product		6.00	8	2024-07-14 14:08:52.766087+00	2024-07-14 14:08:52.766098+00	1
+1	Product made by user		100.00	10	2024-07-14 17:08:40.235169+00	2024-07-14 17:08:40.235186+00	2
+2	Product made by admin		50.00	15	2024-07-14 17:09:03.393779+00	2024-07-14 17:09:03.393791+00	1
 \.
 
 
@@ -395,8 +395,8 @@ COPY public.api_product (id, title, description, price, stock, "createdAt", "upd
 --
 
 COPY public.api_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
-1	pbkdf2_sha256$720000$5T33Sf1AI6KTyJO17tu9sz$wKO+vH/OaSXVbA1jRSKg68Vr32kt3M5+hM1x7D3dCa4=	\N	f	user				f	t	2024-07-14 14:07:03.370854+00
-2	pbkdf2_sha256$720000$irLLw1Vh1tysTcdVSX4SDr$Z0WvdwJs5FvhMRiz3WycH/iu/OneiynAIg2Dzgoitfg=	2024-07-14 14:08:13.047425+00	t	admin				t	t	2024-07-14 14:07:11.357752+00
+2	pbkdf2_sha256$720000$cPFjYKS4FV8Bqbur2XSxHA$s2wRZHanMJxX6iE6t/0JY1UpLStqSI/zLGiAxPJokRE=	\N	f	user				f	t	2024-07-14 17:07:50.564656+00
+1	pbkdf2_sha256$720000$QsWvjyqVFp2Gymr5Y826I5$ETmNcNi5uGxsZfqXhARWhwfrWTUljo7AbDTov3wgk6Y=	\N	t	admin				t	t	2024-07-14 17:07:38.513008+00
 \.
 
 
@@ -481,8 +481,6 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 --
 
 COPY public.django_admin_log (id, action_time, object_id, object_repr, action_flag, change_message, content_type_id, user_id) FROM stdin;
-1	2024-07-14 14:08:32.883581+00	1	Admin product	1	[{"added": {}}]	8	2
-2	2024-07-14 14:08:52.766746+00	2	User product	1	[{"added": {}}]	8	2
 \.
 
 
@@ -508,28 +506,29 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2024-07-14 14:06:49.278219+00
-2	contenttypes	0002_remove_content_type_name	2024-07-14 14:06:49.292021+00
-3	auth	0001_initial	2024-07-14 14:06:49.377071+00
-4	auth	0002_alter_permission_name_max_length	2024-07-14 14:06:49.387755+00
-5	auth	0003_alter_user_email_max_length	2024-07-14 14:06:49.40088+00
-6	auth	0004_alter_user_username_opts	2024-07-14 14:06:49.413148+00
-7	auth	0005_alter_user_last_login_null	2024-07-14 14:06:49.422583+00
-8	auth	0006_require_contenttypes_0002	2024-07-14 14:06:49.424859+00
-9	auth	0007_alter_validators_add_error_messages	2024-07-14 14:06:49.430718+00
-10	auth	0008_alter_user_username_max_length	2024-07-14 14:06:49.435607+00
-11	auth	0009_alter_user_last_name_max_length	2024-07-14 14:06:49.441184+00
-12	auth	0010_alter_group_name_max_length	2024-07-14 14:06:49.446586+00
-13	auth	0011_update_proxy_permissions	2024-07-14 14:06:49.45098+00
-14	auth	0012_alter_user_first_name_max_length	2024-07-14 14:06:49.457489+00
-15	api	0001_initial	2024-07-14 14:06:49.57905+00
-16	admin	0001_initial	2024-07-14 14:06:49.639539+00
-17	admin	0002_logentry_remove_auto_add	2024-07-14 14:06:49.655186+00
-18	admin	0003_logentry_add_action_flag_choices	2024-07-14 14:06:49.666303+00
-19	api	0002_alter_cart_totalcost	2024-07-14 14:06:49.675482+00
-20	api	0003_cartitem	2024-07-14 14:06:49.700731+00
-21	api	0004_remove_cart_totalcost_alter_cartitem_quantity_and_more	2024-07-14 14:06:49.721487+00
-22	sessions	0001_initial	2024-07-14 14:06:49.753571+00
+1	contenttypes	0001_initial	2024-07-14 17:06:51.237215+00
+2	contenttypes	0002_remove_content_type_name	2024-07-14 17:06:51.242798+00
+3	auth	0001_initial	2024-07-14 17:06:51.30358+00
+4	auth	0002_alter_permission_name_max_length	2024-07-14 17:06:51.318217+00
+5	auth	0003_alter_user_email_max_length	2024-07-14 17:06:51.334827+00
+6	auth	0004_alter_user_username_opts	2024-07-14 17:06:51.345241+00
+7	auth	0005_alter_user_last_login_null	2024-07-14 17:06:51.351657+00
+8	auth	0006_require_contenttypes_0002	2024-07-14 17:06:51.353533+00
+9	auth	0007_alter_validators_add_error_messages	2024-07-14 17:06:51.359003+00
+10	auth	0008_alter_user_username_max_length	2024-07-14 17:06:51.36468+00
+11	auth	0009_alter_user_last_name_max_length	2024-07-14 17:06:51.370421+00
+12	auth	0010_alter_group_name_max_length	2024-07-14 17:06:51.376387+00
+13	auth	0011_update_proxy_permissions	2024-07-14 17:06:51.381326+00
+14	auth	0012_alter_user_first_name_max_length	2024-07-14 17:06:51.387079+00
+15	api	0001_initial	2024-07-14 17:06:51.501074+00
+16	admin	0001_initial	2024-07-14 17:06:51.54933+00
+17	admin	0002_logentry_remove_auto_add	2024-07-14 17:06:51.568375+00
+18	admin	0003_logentry_add_action_flag_choices	2024-07-14 17:06:51.586007+00
+19	api	0002_alter_cart_totalcost	2024-07-14 17:06:51.595868+00
+20	api	0003_cartitem	2024-07-14 17:06:51.621415+00
+21	api	0004_remove_cart_totalcost_alter_cartitem_quantity_and_more	2024-07-14 17:06:51.64176+00
+22	api	0005_alter_product_creatorid	2024-07-14 17:06:51.652532+00
+23	sessions	0001_initial	2024-07-14 17:06:51.67012+00
 \.
 
 
@@ -538,7 +537,6 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 --
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
-iw0v1u1ugure9htkj08dv99lnzj5b7fi	.eJxVjDsOwjAQBe_iGllZf7OU9JzBWu86OIASKU4qxN0hUgpo38y8l0q0rTVtrSxpFHVWRp1-t0z8KNMO5E7TbdY8T-syZr0r-qBNX2cpz8vh_h1UavVbo4XgGTxyZ4YeUEr00TnGASxSn4MwOTA5gAWxGJHEkI_GdRyYMKv3B8EkN0c:1sSztd:IH8Ug20GOjEaUE8CJE-6F5mjEA9mCILvZUz7R6Oj1Os	2024-07-28 14:08:13.050608+00
 \.
 
 
@@ -546,7 +544,7 @@ iw0v1u1ugure9htkj08dv99lnzj5b7fi	.eJxVjDsOwjAQBe_iGllZf7OU9JzBWu86OIASKU4qxN0hUg
 -- Name: api_cartitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.api_cartitem_id_seq', 1, true);
+SELECT pg_catalog.setval('public.api_cartitem_id_seq', 1, false);
 
 
 --
@@ -567,7 +565,7 @@ SELECT pg_catalog.setval('public.api_user_groups_id_seq', 1, false);
 -- Name: api_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.api_user_id_seq', 2, true);
+SELECT pg_catalog.setval('public.api_user_id_seq', 3, true);
 
 
 --
@@ -602,7 +600,7 @@ SELECT pg_catalog.setval('public.auth_permission_id_seq', 36, true);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 2, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
 
 
 --
@@ -616,7 +614,7 @@ SELECT pg_catalog.setval('public.django_content_type_id_seq', 9, true);
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 22, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 23, true);
 
 
 --
