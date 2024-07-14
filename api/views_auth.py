@@ -5,19 +5,18 @@ from .models import User
 from .serializers import UserSerializer
 from .permissions import IsAdminOrReadOnly
 
+class UserListCreate(generics.ListCreateAPIView):
+    """
+    View for listing and creating of users.
 
-class AuthRegisterView(generics.CreateAPIView):
+    - Allows anyone to list all user information.
+    - Allows anyone to create new accouns
     """
-        View to allow users to register their account by using Create API View
-    """
+    queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = "id"
 
-
-class UserView(generics.GenericAPIView, 
-               mixins.ListModelMixin, 
-               mixins.RetrieveModelMixin, 
-               mixins.UpdateModelMixin, 
-               mixins.DestroyModelMixin):
+class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """
     View for manipulation of users.
 
@@ -31,22 +30,3 @@ class UserView(generics.GenericAPIView,
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, IsAdminOrReadOnly
     ]
-
-    # Basic CRUD operations
-    def get(self, request, *args, **kwargs):
-        """
-        Handle GET requests. List ALL users if no id is provided, 
-        retrieve a user if id is provided.
-        """
-        lookup_pk = kwargs.get(self.lookup_field)
-        if lookup_pk:
-            return self.retrieve(request, *args, **kwargs)
-        return self.list(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
- 
-

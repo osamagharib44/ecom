@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, status, permissions
 from rest_framework.response import Response
 from .models import Product,  Cart, CartItem
-from .serializers import  CartSerializer
+from .serializers import  CartSerializer, CartItemSerializer, OptionalSerializer
+from drf_yasg.utils import swagger_auto_schema
 
 
 class CartGenericView(generics.GenericAPIView):
@@ -10,9 +11,9 @@ class CartGenericView(generics.GenericAPIView):
     A generic view for handling cart-related operations, which will be extended for multiple views.
     Only authenticated users are allowed
     """
-    serializer_class = CartSerializer
     lookup_field = "productId"
-
+    serializer_class = CartSerializer
+    
     # Only authenticated users are allowed
     permission_classes = [permissions.IsAuthenticated]
 
@@ -55,14 +56,27 @@ class CartGenericView(generics.GenericAPIView):
             return matchedItemsList[0]
 
 
-class CartView(CartGenericView):
+class CartRetrieve(CartGenericView):
     """
     View for handling operations on the user's cart including retrieval, 
     adding items, updating quantities, and removing items.
     """
-
-    # CRUD operations
+    # Get
     def get(self, request, *args, **kwargs):
+        """
+        Get current User's cart
+        """
+        instance = self.get_cart()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+ 
+
+class CartUpdate(CartGenericView):
+
+    def returnCart(self, request, *args, **kwargs):
+        """
+        Get current User's cart
+        """
         instance = self.get_cart()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -83,8 +97,9 @@ class CartView(CartGenericView):
 
         cartItem.save()
         cart.save()
-        return self.get(request, *args, **kwargs)
+        return self.returnCart(request, *args, **kwargs)
 
+    @swagger_auto_schema(request_body=CartItemSerializer, required=True)
     def put(self, request, *args, **kwargs):
         """
         Update the quantity of a product in the cart.
@@ -105,7 +120,7 @@ class CartView(CartGenericView):
 
         cartItem.save()
         cart.save()
-        return self.get(request, *args, **kwargs)
+        return self.returnCart(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """
@@ -122,14 +137,13 @@ class CartView(CartGenericView):
             cartItem.delete()
             cart.save()
 
-        return self.get(request, *args, **kwargs)
+        return self.returnCart(request, *args, **kwargs)
 
 
-class CartCheckoutView(CartGenericView):
+class CartCheckout(CartGenericView):
     """
     View for handling the checkout process of the user's cart.
     """
-
     def post(self, request, *args, **kwargs):
         """
         Checkout the user's cart. Ensure that the quantity ordered for each 

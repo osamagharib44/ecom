@@ -38,7 +38,7 @@ class Product(models.Model):
     description = models.CharField(max_length=250, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField(default=10, validators=[MinValueValidator(0)])
-    creatorId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="products")
+    creatorId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="createdProducts")
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
