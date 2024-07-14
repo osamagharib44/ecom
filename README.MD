@@ -24,7 +24,7 @@ cd ecom
 3.  **Run docker compose file**
 
 ```bash
-docker compose -d up
+docker compose up -d
 ```
 
 4.  **Copy backup file for database**
