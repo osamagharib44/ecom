@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ecom
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - appNet
+
+  backend:
+    restart: always
+    image: osamagharib/ecom-backend
+    container_name: ecom-backend
+    environment:
+      - DJANGO_DEBUG=True
+      - DB_NAME=ecom
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - db
+    networks:
+      - appNet
+    ports:
+      - '8000:8000'
+
+networks:
+  appNet:
+
+volumes:
+  db:
