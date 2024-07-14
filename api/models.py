@@ -1,9 +1,16 @@
+from typing import Iterable
 from django.db import models
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
+class User(AbstractUser):
+    def save(self, *args, **kwargs):
+        created = not self.pk
+        res = super().save(*args,**kwargs)
+        if created:
+            Cart.objects.create(user=self)
+        return res
+
 class Product(models.Model):
     title = models.CharField(max_length=50, db_index=True, unique=True)
     description = models.CharField(max_length=250, blank=True)
@@ -16,3 +23,6 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+class Cart(models.Model):
+    totalCost = models.DecimalField(max_digits=100, decimal_places=2, default=0)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="cart")

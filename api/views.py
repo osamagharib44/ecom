@@ -1,10 +1,8 @@
 from rest_framework import generics, mixins, status, authentication, permissions
-from .models import Product
+from .models import Product, User
 from .serializers import ProductSerializer, UserSerializer
 from .permissions import IsOwnerOrReadOnly
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
 class ProductView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Product.objects.all()

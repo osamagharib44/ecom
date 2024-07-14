@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from .models import Product
-from django.contrib.auth import get_user_model
+from .models import Product, User
 
-User = get_user_model()
 
 class ProductSerializer(serializers.ModelSerializer):
     creatorId = serializers.ReadOnlyField(source='creatorId.id', required=False)
