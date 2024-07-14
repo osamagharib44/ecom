@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from .models import Product, User, Cart, CartItem
+from .models import Product, User, Cart
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Product model.
+    """
+    
     creatorId = serializers.ReadOnlyField(source='creatorId.id', required=False)
     class Meta:
         model = Product
@@ -10,6 +14,10 @@ class ProductSerializer(serializers.ModelSerializer):
         
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model.
+    """
+    
     password = serializers.CharField(write_only=True, required=False)
     products = serializers.StringRelatedField(many=True, read_only=True)
 
@@ -36,6 +44,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Cart model.
+    """
+    
     items = serializers.StringRelatedField(many=True, read_only=True)
     totalCost = serializers.SerializerMethodField("getTotalCost")
     class Meta:
