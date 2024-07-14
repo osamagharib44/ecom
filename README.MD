@@ -39,7 +39,7 @@ docker exec -ti postgres bash
 ```bash
 psql -U admin -d ecom -f backup.sql
 ```
-Will output alot of errors, safe to ignore.
+May output some errors, safe to ignore.
 
 ## How to use
 
@@ -50,10 +50,13 @@ Will output alot of errors, safe to ignore.
 
 ### Usage
 
+#### NOTE: When using the cart APIs, you might get asked to provide a cart JSON Object, in that case simply provide an empty object {}.
+
 - go to localhost:8000/swagger to test the APIs
     1. click on the far right "Authorize" to log in as one of the users
     2. Start creating some products
     3. Play around with the avaliable APIs and try different results
+
 - go to localhost:8000/admin to see the database (**MUST LOGIN AS ADMIN**)
 
 
