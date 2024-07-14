@@ -1,8 +1,12 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, status, authentication, permissions
-from .models import Product, User
-from .serializers import ProductSerializer, UserSerializer
+from rest_framework.response import Response
+from .models import Product, User, Cart, CartItem
+from .serializers import ProductSerializer, UserSerializer, CartSerializer
 from .permissions import IsOwnerOrReadOnly
 
+class AuthRegisterView(generics.CreateAPIView):
+    serializer_class = UserSerializer
 
 class ProductView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Product.objects.all()
@@ -55,5 +59,100 @@ class UserView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveMo
         return self.destroy(request, *args, **kwargs)
 
 
-class AuthRegisterView(generics.CreateAPIView):
-    serializer_class = UserSerializer
+class CartView(generics.GenericAPIView):
+    serializer_class = CartSerializer
+    lookup_field = "productId"
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Cart.objects.filter(pk=self.request.user)
+ 
+    
+    def get_cart(self):
+        return Cart.objects.get(pk=self.request.user)
+ 
+    
+    def get_cartItem(self, productId, createIfNotExists=True):
+        productToAdd = get_object_or_404(Product, pk = productId)
+        cart = self.get_cart()
+        matchedItemsList = CartItem.objects.filter(product=productToAdd, cart=cart)
+        
+        if (len(matchedItemsList)==0):
+            if (createIfNotExists):
+                item = CartItem.objects.create(product=productToAdd, cart=cart, quantity=0)
+                return item
+            else:
+                return None
+        else:
+            item = matchedItemsList[0]
+            return item      
+
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_cart()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+    
+    def post(self, request, *args, **kwargs):
+        productId = kwargs.get(self.lookup_field)
+        if productId==None:
+            data = {
+                "error": "No product ID provided"
+            }
+            return Response(data ,status=status.HTTP_400_BAD_REQUEST)
+        
+        cart = self.get_cart()
+        cartItem = self.get_cartItem(productId=productId)
+        
+        cartItem.quantity += 1
+        cart.totalCost += cartItem.product.price
+        
+        cartItem.save()
+        cart.save()
+        return self.get(request, *args, **kwargs)
+
+        
+    def put(self, request, *args, **kwargs):        
+        productId = kwargs.get(self.lookup_field)
+        if productId==None:
+            data = {
+                "error": "No product ID provided"
+            }
+            return Response(data ,status=status.HTTP_400_BAD_REQUEST)
+        
+        quantity = request.data.get("quantity")        
+        if (quantity==None or quantity<=0):
+            data = {
+                "error": "Product quantity must EXIST and be GREATER than 0"
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)  
+        
+        cart = self.get_cart()
+        cartItem = self.get_cartItem(productId=productId)
+
+        oldQuantity = cartItem.quantity
+        cartItem.quantity = quantity
+        cart.totalCost += cartItem.product.price * (quantity - oldQuantity)
+        
+        cartItem.save()
+        cart.save()
+        return self.get(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        productId = kwargs.get(self.lookup_field)
+        if productId==None:
+            data = {
+                "error": "No product ID provided"
+            }
+            return Response(data ,status=status.HTTP_400_BAD_REQUEST)
+        
+        cart = self.get_cart()
+        cartItem = self.get_cartItem(productId=productId)
+        if (cartItem):
+            cart.totalCost -= cartItem.product.price * (cartItem.quantity)
+            
+            cartItem.delete()
+            cart.save()
+        return self.get(request, *args, **kwargs)
