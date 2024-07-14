@@ -37,7 +37,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     items = serializers.StringRelatedField(many=True, read_only=True)
+    totalCost = serializers.SerializerMethodField("getTotalCost")
     class Meta:
         model = Cart
         fields = "__all__"
+        
+    def getTotalCost(self, *args, **kwargs):
+        return self.instance.totalCost
         

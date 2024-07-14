@@ -59,7 +59,7 @@ class UserView(generics.GenericAPIView, mixins.ListModelMixin, mixins.RetrieveMo
         return self.destroy(request, *args, **kwargs)
 
 
-class CartView(generics.GenericAPIView):
+class CartGenericView(generics.GenericAPIView):
     serializer_class = CartSerializer
     lookup_field = "productId"
 
@@ -89,6 +89,7 @@ class CartView(generics.GenericAPIView):
             return item      
 
 
+class CartView(CartGenericView):
     def get(self, request, *args, **kwargs):
         instance = self.get_cart()
         serializer = self.get_serializer(instance)
@@ -105,9 +106,7 @@ class CartView(generics.GenericAPIView):
         
         cart = self.get_cart()
         cartItem = self.get_cartItem(productId=productId)
-        
         cartItem.quantity += 1
-        cart.totalCost += cartItem.product.price
         
         cartItem.save()
         cart.save()
@@ -131,14 +130,12 @@ class CartView(generics.GenericAPIView):
         
         cart = self.get_cart()
         cartItem = self.get_cartItem(productId=productId)
-
-        oldQuantity = cartItem.quantity
         cartItem.quantity = quantity
-        cart.totalCost += cartItem.product.price * (quantity - oldQuantity)
         
         cartItem.save()
         cart.save()
         return self.get(request, *args, **kwargs)
+
 
     def delete(self, request, *args, **kwargs):
         productId = kwargs.get(self.lookup_field)
@@ -150,9 +147,26 @@ class CartView(generics.GenericAPIView):
         
         cart = self.get_cart()
         cartItem = self.get_cartItem(productId=productId)
-        if (cartItem):
-            cart.totalCost -= cartItem.product.price * (cartItem.quantity)
-            
+        if (cartItem):            
             cartItem.delete()
             cart.save()
+            
         return self.get(request, *args, **kwargs)
+
+
+class CartCheckoutView(CartGenericView):
+    def post(self, request, *args, **kwargs):
+        cart = self.get_cart()
+        for item in cart.items:
+            if (item.quantity>item.product.stock):
+                data = {
+                    "error": "Quantity ordered for some products exceeds their available stock in the market"
+                }
+                return Response(data ,status=status.HTTP_409_CONFLICT)
+            
+        for item in cart.items:
+            item.delete()
+            
+        cart.totalCost = 0
+        cart.save()
+ 

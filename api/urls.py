@@ -13,5 +13,6 @@ urlpatterns = [
     path("users/<int:id>", views.UserView.as_view(), name="users-single"),
 
     path("cart", views.CartView.as_view(), name="cart-list"),
-    path("cart/<int:productId>", views.CartView.as_view(), name="cart-list")
+    path("cart/<int:productId>", views.CartView.as_view(), name="cart-update"),
+    path("cart/checkout", views.CartCheckoutView.as_view(), name="cart-checkout"),
 ]
